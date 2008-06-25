@@ -71,6 +71,17 @@ module Myringr::Models
     end
   end
 
+  class AddRegServer < V 2
+    def self.up
+      add_column :connections, :regserver, :string, :limit => 100, :null => true, :default => nil
+    end
+  end
+
+  class Connection < Base
+    def self.inheritance_column
+    end
+  end
+
   class Listing < Base
   end
 
@@ -98,7 +109,7 @@ module Myringr::Controllers
     end
   end
 
-  class CreateOrUpdateListing < R("/listing/(\d+)")
+  class CreateOrUpdateListing < R("/listing/(\d*)")
     def get (listing_id = nil)
       @listing = nil
     end
@@ -132,6 +143,49 @@ module Myringr::Controllers
     def get
     end
   end
+
+  class Connections < R("/connections")
+    def get
+      @connections = Connection.find(:all)
+      render :connections
+    end
+  end
+
+  class CreateOrUpdateConnection < R("/connection/(\d*)")
+    def get (connection_id = nil)
+      if Connection.exists?(connection_id) then
+        @connection = Connection.find(connection_id)
+      else
+        @connection = Connection.new
+      end
+
+      render :create_or_update_connection
+    end
+    def post (connection_id)
+      if Connection.exists?(connection_id) then
+        @connection = Connection.find(connection_id)
+      else
+        @connection = Connection.new
+      end
+      @connection.name = "wangchung"
+      @connection.secret = "qwerty"
+      @connection.save!
+      #@connection.secret = "wangchung"
+    end
+  end
+
+  class DeleteSelectedConnections < R("/connections/delete")
+    def get
+    end
+    def post
+    end
+  end
+
+  class Index < R("/")
+    def get
+      render :index
+    end
+  end
 end
 
 module Myringr::Views
@@ -144,6 +198,40 @@ module Myringr::Views
       }
       body {
         yield
+      }
+    }
+  end
+
+  def index
+    h1 {
+      "myringr"
+    }
+  end
+
+  def connections
+    form(:action => R(DeleteSelectedConnections), :method => :post) {
+      ul {
+        @connections.each { |connection|
+          li {
+            input(:type => :checkbox, :name => "connections[]", :value => connection.id)
+            label {
+              connection.name
+            }
+          }
+        }
+      }
+    }
+  end
+
+  def create_or_update_connection
+    form(:action => R(CreateOrUpdateConnection, @connection.id), :method => :post) {
+      ul {
+        li {
+          label {
+            "name"
+          }
+          input(:type => :text, :name => :name, :value => @connection.name)
+        }
       }
     }
   end
