@@ -1,3 +1,7 @@
-A ruby telephony application...
+Generates random heatmaps, Camping+RMagick
+===
 
-Web based VM and more
+TODO:
+
+  Implement API for generating useful heatmaps from a set of coordinates.
+  Provide more options for color/point styling.
