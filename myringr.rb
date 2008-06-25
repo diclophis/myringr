@@ -96,62 +96,62 @@ module Myringr::Models
 end
 
 module Myringr::Controllers
-  class Dashboard < R("/dashboard")
+  class Dashboard < R('/dashboard')
     def get
       @most_active_listings = []
       @lastest_calls = []
     end
   end
 
-  class Listings < R("/listings")
+  class Listings < R('/listings')
     def get
       @listings = []
     end
   end
 
-  class CreateOrUpdateListing < R("/listing/(\d*)")
+  class CreateOrUpdateListing < R('/listing/(\d*)')
     def get (listing_id = nil)
       @listing = nil
     end
   end
 
-  class Report < R("/report")
+  class Report < R('/report')
     def get
       @begin_date = nil
       @end_date = nil
     end
   end
 
-  class Voicemails < R("/voicemails")
+  class Voicemails < R('/voicemails')
     def get
       @voicemails = []
     end
   end
 
-  class Faxes < R("/faxes")
+  class Faxes < R('/faxes')
     def get
       @faxes = []
     end
   end
 
-  class Notifications < R("/notifications")
+  class Notifications < R('/notifications')
     def get
     end
   end
 
-  class Account < R("/account")
+  class Account < R('/account')
     def get
     end
   end
 
-  class Connections < R("/connections")
+  class Connections < R('/connections')
     def get
       @connections = Connection.find(:all)
       render :connections
     end
   end
 
-  class CreateOrUpdateConnection < R("/connection/(\d*)")
+  class CreateOrUpdateConnection < R('/connection/(\d*)')
     def get (connection_id = nil)
       if Connection.exists?(connection_id) then
         @connection = Connection.find(connection_id)
@@ -174,7 +174,7 @@ module Myringr::Controllers
     end
   end
 
-  class DeleteSelectedConnections < R("/connections/delete")
+  class DeleteSelectedConnections < R('/connections/delete')
     def get
     end
     def post
@@ -215,13 +215,59 @@ module Myringr::Views
           li {
             input(:type => :checkbox, :name => "connections[]", :value => connection.id)
             label {
-              connection.name
+              a(:href => R(CreateOrUpdateConnection, connection.id)) {
+                connection.name
+              }
             }
           }
         }
       }
+      input(:type => :submit, :value => "delete selected connections")
     }
   end
+=begin
+id: 1
+name: wangchung
+host: dynamic
+nat: no
+type: friend
+accountcode: NULL
+amaflags: NULL
+callgroup: NULL
+callerid: NULL
+cancallforward: no
+canreinvite: no
+context: NULL
+defaultip: NULL
+dtmfmode: rfc2833
+fromuser: wangchung
+fromdomain: NULL
+insecure: NULL
+language: NULL
+mailbox: NULL
+md5secret: NULL
+deny: NULL
+permit: NULL
+mask: NULL
+musiconhold: NULL
+pickupgroup: NULL
+qualify: no
+regexten: NULL
+restrictcid: NULL
+rtptimeout: NULL
+rtpholdtimeout: NULL
+secret: qwerty
+setvar: NULL
+disallow: all
+allow: ulaw
+fullcontact:
+ipaddr: 98.210.152.211
+port: 5060
+regseconds: 1214394710
+username: wangchung
+useragent: wengo/v1/wengophoneng/wengo/rev12359/trunk/
+regserver: myringr
+=end
 
   def create_or_update_connection
     form(:action => R(CreateOrUpdateConnection, @connection.id), :method => :post) {
@@ -231,6 +277,18 @@ module Myringr::Views
             "name"
           }
           input(:type => :text, :name => :name, :value => @connection.name)
+        }
+        li {
+          label {
+            "host"
+          }
+          input(:type => :text, :name => :host, :value => @connection.host)
+        }
+        li {
+          label {
+            "secret"
+          }
+          input(:type => :text, :name => :secret, :value => @connection.secret)
         }
       }
     }
